@@ -1,0 +1,34 @@
+version: '3.8'
+
+services:
+  web_exam:
+    build: .
+    image: themusharraf/mydjango:latest
+    command: sh -c "python manage.py migrate &&
+                    python manage.py runserver 0.0.0.0:8000"
+    container_name: web_dj
+    ports:
+      - "8000:8000"
+    environment:
+      - DJANGO_DB=django.db.backends.postgresql
+      - DB_NAME=compose_postgres
+      - DB_USER=postgres
+      - DB_PASSWORD=1
+      - DB_PORT=5432
+      - DB_HOST=pg
+    depends_on:
+      - pg
+  pg:
+    image: postgres:alpine3.17
+    container_name: pg_data
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_DB=compose_postgres
+      - POSTGRES_PASSWORD=1
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+volumes:
+  pgdata:
